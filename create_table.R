@@ -16,21 +16,7 @@ base_uri <- "http://api.yummly.com/v1/api/"
 "http://api.yummly.com/v1/api/recipes?_app_id=YOUR_ID&_app_key=YOUR_APP_KEY&q=onion+soup
 &maxResult=10&start=10"
 
-#exclude ingred
-
-#All diet
-
-#all cuisine
-
-#all course
-
-# maxResult = 20
-
-#flavor
-
-queries <- c("potato", "Asian", "American", "Lunch")
-
-
+queries <- c("", "American", "", "")
 query_key <- c("excludedIngredient[]", "allowedCuisine[]", "allowedCuisine[]", "allowedCourse[]")
 
 generate_param <- function(queries) {
@@ -39,13 +25,20 @@ generate_param <- function(queries) {
   for (queryItem in queries) {
     index <- index + 1
     if (queryItem != "") {
-      if(index == 2 || index == 3) {
+      if(index == 2) {
         queryItem <- tolower(queryItem)
         queryItem <- paste0("cuisine^cuisine-", queryItem)
+        query_params_list[["allowedCuisine[]1" ]] <- queryItem
+        names(query_params_list)[[5]] <- "allowedCuisine[]" #users have to input something for cuisine 1
+      } else if(index == 3) {
+        queryItem <- tolower(queryItem)
+        queryItem <- paste0("cuisine^cuisine-", queryItem)
+        query_params_list[["allowedCuisine[]2" ]] <- queryItem
+        names(query_params_list)[[6]] <- "allowedCuisine[]"
       } else if(index == 4) {
-        queryItem <- paste0("course^course-", queryItem) 
+        queryItem <- paste0("course^course-", queryItem)
+        query_params_list[[ query_key[[index]] ]] <- queryItem  #users have to input something for cuisine 1, so it won't out of boundary.
       }
-      query_params_list[[ query_key[[index]] ]] <- queryItem
     }
   }
   query_params_list
@@ -56,11 +49,6 @@ generate_param(queries)
 #create_table <- function(queries){
   #Create the table that include the all the information for all of the recipes (except the nutrition contents)
   all_recipes_uri <- paste0(base_uri, "recipes")
-  all_recipes_uri
-  # http://api.yummly.com/v1/api/recipes
-  base_uri
-  # query_params <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 100, "start"=1, 
-  #                      "allowedCuisine[]" = "cuisine^cuisine-american", "allowedCuisine[]" = "cuisine^cuisine-asian")
   response <- GET(all_recipes_uri, query = generate_param(queries))
   body <- content(response, "text")
   recipe_parent <- fromJSON(body)
@@ -73,6 +61,7 @@ generate_param(queries)
   recipes_true <- recipe_parent$matches
   recipes_flatten <- flatten(recipes_true)
   nrow(recipes_flatten)
+
   
   # # load the initial nutrition table
   # nutrition_uri <- paste0(base_uri, "recipe/", recipes_flatten$id[1] )
