@@ -11,20 +11,20 @@ app_id = "cfbca5a8";
 
 base_uri <- "http://api.yummly.com/v1/api/"
 
-"?_app_id=cfbca5a8&_app_key=6173072958d3d557ad3bdf7115bf3a8c& " 
-
-"http://api.yummly.com/v1/api/recipes?_app_id=YOUR_ID&_app_key=YOUR_APP_KEY&q=onion+soup
-&maxResult=10&start=10"
-
-queries <- c("", "American", "", "")
 query_key <- c("excludedIngredient[]", "allowedCuisine[]", "allowedCuisine[]", "allowedCourse[]")
+
+######### allergy table
+
+########
+
+
 
 generate_param <- function(queries) {
   query_params_list <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 100, "start"=1)
   index = 0
   for (queryItem in queries) {
     index <- index + 1
-    if (queryItem != "") {
+    if (queryItem != "No limit") { 
       if(index == 2) {
         queryItem <- tolower(queryItem)
         queryItem <- paste0("cuisine^cuisine-", queryItem)
@@ -38,15 +38,17 @@ generate_param <- function(queries) {
       } else if(index == 4) {
         queryItem <- paste0("course^course-", queryItem)
         query_params_list[[ query_key[[index]] ]] <- queryItem  #users have to input something for cuisine 1, so it won't out of boundary.
+      } else {
+        query_params_list[[ query_key[[index]] ]] <- queryItem
       }
     }
   }
   query_params_list
 }
-
+queries <- c("No limit", "asian", "American", "dinner")
 generate_param(queries)
 
-#create_table <- function(queries){
+create_table <- function(queries){
   #Create the table that include the all the information for all of the recipes (except the nutrition contents)
   all_recipes_uri <- paste0(base_uri, "recipes")
   response <- GET(all_recipes_uri, query = generate_param(queries))
@@ -60,7 +62,7 @@ generate_param(queries)
   is.data.frame(recipe_parent$matches)
   recipes_true <- recipe_parent$matches
   recipes_flatten <- flatten(recipes_true)
-  nrow(recipes_flatten)
+  recipes_flatten
 
   
   # # load the initial nutrition table
@@ -114,7 +116,6 @@ generate_param(queries)
   #   body <- content(response, "text")
   #   recipe_details_parent <- fromJSON(body)
   #   nutrition <- recipe_details_parent$nutritionEstimates
-  #   nutrition
   #   if (is.data.frame(nutrition)) {
   #     nutrition <- flatten(nutrition)
   #     nutrition <- nutrition %>% 
@@ -144,11 +145,8 @@ generate_param(queries)
   # }
   # 
   # recipes_and_nutrition <- left_join(recipes_flatten, nutrition1, by = c("id" = "recipe_id")) 
-#}
+}
 
 
-
-   
-
-############ calls 
+############ 
   
