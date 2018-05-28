@@ -3,51 +3,58 @@ library(jsonlite)
 library(dplyr)
 library("tidyr")
 
-# Get base URI
-
+############# Basic Set up ##############
 
 apikey = "6173072958d3d557ad3bdf7115bf3a8c";
 app_id = "cfbca5a8";
-
 base_uri <- "http://api.yummly.com/v1/api/"
 
-query_key <- c("excludedIngredient[]", "allowedCuisine[]", "allowedCuisine[]", "allowedCourse[]")
+############# allergy attempts ##############
+allergies <- c("392^Wheat-Free", "393^Gluten-Free", "394^Peanut-Free", "395^TreeNut-Free", "396^Dairy-Free", "397^Egg-Free")
 
-######### allergy table
+############# Create params list ############# 
 
-########
+# The order of the query key has been changed, and actually there is no need to using query_key
+query_key <- c("allowedCuisine[]", "allowedCuisine[]", "allowedCourse[]","excludedIngredient[]") 
 
-
-
+# The following function will create a param list for fetching
 generate_param <- function(queries) {
   query_params_list <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 100, "start"=1)
   index = 0
+  index_for_ingredients <- 1
   for (queryItem in queries) {
     index <- index + 1
     if (queryItem != "No limit") { 
-      if(index == 2) {
+      if(index == 1) {
         queryItem <- tolower(queryItem)
         queryItem <- paste0("cuisine^cuisine-", queryItem)
         query_params_list[["allowedCuisine[]1" ]] <- queryItem
         names(query_params_list)[[5]] <- "allowedCuisine[]" #users have to input something for cuisine 1
-      } else if(index == 3) {
+      } else if(index == 2) {
         queryItem <- tolower(queryItem)
         queryItem <- paste0("cuisine^cuisine-", queryItem)
         query_params_list[["allowedCuisine[]2" ]] <- queryItem
         names(query_params_list)[[6]] <- "allowedCuisine[]"
-      } else if(index == 4) {
+      } else if(index == 3) {
         queryItem <- paste0("course^course-", queryItem)
-        query_params_list[[ query_key[[index]] ]] <- queryItem  #users have to input something for cuisine 1, so it won't out of boundary.
+        query_params_list[[ "allowedCourse[]" ]] <- queryItem  #users have to input something for cuisine 1, so it won't out of boundary.
       } else {
-        query_params_list[[ query_key[[index]] ]] <- queryItem
+        query_param_list_name <- paste0("excludedIngredient[]", index)
+        ingredients_index = index_for_ingredients + 7
+        query_params_list[[ query_param_list_name ]] <- queryItem
+        names(query_params_list)[[ingredients_index]] <- "excludedIngredient[]"
+        index_for_ingredients <- index_for_ingredients + 1
       }
     }
   }
   query_params_list
 }
-queries <- c("No limit", "asian", "American", "dinner")
+queries <- c("asian", "American", "dinner", "ingredients1", "ingredients2", "ingredients3", "ingredients4")
 generate_param(queries)
 
+############# Create the table that need to for analyzing ############# 
+
+#Create the table that need to for analyzing the information about foods (information including flavor, prep time, nutrition)
 create_table <- function(queries){
   #Create the table that include the all the information for all of the recipes (except the nutrition contents)
   all_recipes_uri <- paste0(base_uri, "recipes")

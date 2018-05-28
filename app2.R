@@ -11,7 +11,7 @@ diet_list <- c ("No limit", "Lacto vegetarian", "Ovo vegetarian", "Pescetarian",
 course_list <- c("No limit", "Main Dishes", "Desserts", "Side Dishes", "Lunch and Snacks", "Appetizers", "Salads, Breads", 
                  "Breakfast and Brunch", "Soups", "Beverages", "Condiments and Sauces", "Cocktails")
 allergy_type <- c("Wheat-Free" = "392^Wheat-Free", "Gluten-Free" = "393^Gluten-Free", "Peanut-Free "= "394^Peanut-Free",
-                  "Tree Nut-Free" = "395^Tree Nut-Free", "Dairy-Free" = "396^Dairy-Free", "Egg-Free" = "397^Egg-Free",
+                  "TreeNut-Free" = "395^Tree Nut-Free", "Dairy-Free" = "396^Dairy-Free", "Egg-Free" = "397^Egg-Free",
                   "Seafood-Free" = "398^Seafood-Free", "Sesame-Free" = "399^Sesame-Free", 
                   "Soy-Free" = "400^Soy-Free", "Sulfite-Free" = "401^Sulfite-Free")
 
@@ -35,8 +35,8 @@ ui <- fluidPage(
     mainPanel(
       tabsetPanel(type = "tabs",
                   # This tab is for
-                  tabPanel("General"
-                    
+                  tabPanel("General",
+                    textOutput("data")
                   ),
                   
                   # This tab is for
@@ -69,9 +69,11 @@ ui <- fluidPage(
 server <- function(input, output) {
   
 # Andy works here
+  output$data <- renderText({
+   c <- input$variable
+   c
+  })
   
-  
-
   
 # Kara workds here r  
 
