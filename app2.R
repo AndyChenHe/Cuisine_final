@@ -7,13 +7,16 @@ cuisine_list <- c("American", "Italian", "Asian", "Mexican", "Southern & Soul Fo
                  "Southwestern", "Barbecue", "Indian", "Chinese", "Cajun & Creole", "English", 
                  "Mediterranean", "Greek", "Spanish", "German", "Thai", 
                  "Moroccan", "Irish", "Japanese", "Cuban", "Hawaiin", "Swedish", "Hungarian", "Portugese")
-diet_list <- c ("No limit", "Lacto vegetarian", "Ovo vegetarian", "Pescetarian", "Vegan", "Vegetarian")
 course_list <- c("No limit", "Main Dishes", "Desserts", "Side Dishes", "Lunch and Snacks", "Appetizers", "Salads, Breads", 
                  "Breakfast and Brunch", "Soups", "Beverages", "Condiments and Sauces", "Cocktails")
+diet_list <- c ("No limit"= "No limit", "Lacto vegetarian" = "388^Lacto vegetarian", "Ovo vegetarian" = "389^Ovo vegetarian", 
+                "Pescetarian" = "390^Pescetarian", "Vegan" = "386^Vegan", "Vegetarian" = "387^Lacto-ovo vegetarian", 
+                "Paleo" = "403^Paleo")
 allergy_type <- c("Wheat-Free" = "392^Wheat-Free", "Gluten-Free" = "393^Gluten-Free", "Peanut-Free "= "394^Peanut-Free",
                   "TreeNut-Free" = "395^Tree Nut-Free", "Dairy-Free" = "396^Dairy-Free", "Egg-Free" = "397^Egg-Free",
                   "Seafood-Free" = "398^Seafood-Free", "Sesame-Free" = "399^Sesame-Free", 
                   "Soy-Free" = "400^Soy-Free", "Sulfite-Free" = "401^Sulfite-Free")
+length(allergy_type)
 
 #create UI for the shiny App
 ui <- fluidPage(
@@ -24,19 +27,23 @@ ui <- fluidPage(
       # User can use this drop down menu to select the state they want to see
       selectInput("cuisine1_name", label="The name of the Cuisine 1", 
                   choices= unique(cuisine_list)),
-            selectInput("cuisine2_name", label="The name of the Cuisine 2", 
+      selectInput("cuisine2_name", label="The name of the Cuisine 2", 
                   choices= unique(cuisine_list)),
-      selectInput("Allowed diet", label="Allowed diet", 
-                  choices= unique(diet_list)),
-      checkboxGroupInput("variable", "Variables to show:",
-                         allergy_type)
+      selectInput("allowed_course", label="Allowed course", 
+                  choices= unique(course_list)),
+      radioButtons("diet", "Allowed diet:",
+                         diet_list),
+      checkboxGroupInput("allergy_type", "Allergy:",
+                         allergy_type),
+      submitButton("Submit")
+      
    ),
     # This panel will be used to show the graph and table
     mainPanel(
       tabsetPanel(type = "tabs",
                   # This tab is for
                   tabPanel("General",
-                    textOutput("data")
+                    dataTableOutput("data")
                   ),
                   
                   # This tab is for
@@ -67,13 +74,17 @@ ui <- fluidPage(
 
 # Create the server for the shiny app
 server <- function(input, output) {
-  
+
+    
 # Andy works here
-  output$data <- renderText({
-   c <- input$variable
-   c
+  output$data <- renderDataTable({
+    queries <- c(input$cuisine1_name, input$cuisine2_name, input$allowed_course, input$diet, input$allergy_type)
+    queries_list <-generate_param(queries)
+    m <- create_table(queries_list)
+    m <- m %>% 
+      select(recipeName, rating, ingredients, totalTimeInSeconds)
+    m
   })
-  
   
 # Kara workds here r  
 
