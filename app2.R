@@ -36,7 +36,7 @@ ui <- fluidPage(
       checkboxGroupInput("allergy_type", "Allergy:",
                          allergy_type),
       submitButton("Submit")
-      
+
    ),
     # This panel will be used to show the graph and table
     mainPanel(
@@ -47,8 +47,8 @@ ui <- fluidPage(
                   ),
                   
                   # This tab is for
-                  tabPanel("Flavor Profile"
-                           
+                  tabPanel("Flavor Profile",
+                    dataTableOutput("data2")        
                   ),
                   
                   # This tab is for
@@ -74,20 +74,33 @@ ui <- fluidPage(
 
 # Create the server for the shiny app
 server <- function(input, output) {
-
-    
-# Andy works here
-  output$data <- renderDataTable({
+  
+  reactive_table <- reactiveValues()
+  reactive_table$table <- ""
+  
+  initialize_table_need_to_be_used <- function(){
     queries <- c(input$cuisine1_name, input$cuisine2_name, input$allowed_course, input$diet, input$allergy_type)
     queries_list <-generate_param(queries)
-    m <- create_table(queries_list)
-    m <- m %>% 
-      select(recipeName, rating, ingredients, totalTimeInSeconds)
-    m
+    reactive_table$table <- create_table(queries_list)
+  }
+  
+# Andy works here
+  output$data <- renderDataTable({
+    initialize_table_need_to_be_used()
+    table <- reactive_table$table
+    table
   })
+  
+  output$data2 <- renderDataTable({
+    new_table <- plot(reactive_table$table)
+    new_table
+  })
+
   
 # Kara workds here r  
 
+  
+  
 }
 
 #Create a new app
