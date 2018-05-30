@@ -2,6 +2,7 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 source("create_table.R")
+source("andy_part.R")
 
 cuisine_list <- c("American", "Italian", "Asian", "Mexican", "Southern & Soul Food", "French", 
                  "Southwestern", "Barbecue", "Indian", "Chinese", "Cajun & Creole", "English", 
@@ -43,6 +44,10 @@ ui <- fluidPage(
       tabsetPanel(type = "tabs",
                   # This tab is for
                   tabPanel("General",
+                    h1(
+                      "General information of your choice"
+                    ),
+                    textOutput("general_description"),
                     dataTableOutput("data")
                   ),
                   
@@ -85,15 +90,19 @@ server <- function(input, output) {
   }
   
 # Andy works here
-  output$data <- renderDataTable({
+  output$general_description <- renderText({
     initialize_table_need_to_be_used()
-    table <- reactive_table$table
-    table
+    summary_list <- return_summary(reactive_table$table, input$cuisine1_name, input$cuisine2_name)
+    cuisine1_name <- input$cuisine1_name
+    cuisine2_name <- input$cuisine2_name
+    description <- return_description(summary_list, cuisine1_name, cuisine2_name)
+    description
   })
   
-  output$data2 <- renderDataTable({
-    new_table <- plot(reactive_table$table)
-    new_table
+  output$data <- renderDataTable({
+    table <- reactive_table$table %>% 
+      select(recipeName,attributes.cuisine, ingredients, rating, totalTimeInSeconds)
+    table
   })
 
   

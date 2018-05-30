@@ -20,7 +20,7 @@ base_uri <- "http://api.yummly.com/v1/api/"
 # as the parameter
 # It will return a list for queries parameters
 generate_param <- function(queries) {
-  query_params_list <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 10, "start"=1)
+  query_params_list <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 50, "start"=1)
   index = 0
   index_for_ingredients <- 1
   the_last_index_for_params <- 4
