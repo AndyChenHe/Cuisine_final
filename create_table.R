@@ -9,10 +9,6 @@ apikey = "6173072958d3d557ad3bdf7115bf3a8c";
 app_id = "cfbca5a8";
 base_uri <- "http://api.yummly.com/v1/api/"
 
-############# allergy attempts ##############
-
-
-
 ############# Create params list ############# 
 
 # The following function will create a param list for fetching
@@ -126,6 +122,8 @@ create_a_nutrition_table <- function(recipes_flatten) {
   # load the sample of the nutrition table, nutrition 1 means sample nutrition table
   nutrition1 <- create_sample()
   # append more rows about the nutritions (based on the ids we got from the above table) to the intial table
+  # The reason for using for loop here is in each loop it will make a function call to fetch the data in 
+  # another list.
   for (id_number in c(1 : nrow(recipes_flatten))){ 
      nutrition_uri <- paste0(base_uri, "recipe/", recipes_flatten$id[id_number] )
      query_params <- list("_app_id" = app_id, "_app_key" = apikey)
@@ -180,22 +178,4 @@ create_a_nutrition_table <- function(recipes_flatten) {
   nutrition1
 }
 
-########### 
 
-
-############ The step for calling a table: (sample calls)
-# create a queries' list 
-# queries <- c("American", "French", "Main Dishes", "390^Pescetarian", "397^Egg-Free")
-# a <- generate_param(queries)
-# query_params <- list("_app_id" = app_id, "_app_key" = apikey, "maxResult" = 10, "start"=1, 
-#                       "allowedCuisine[]" = "cuisine^cuisine-american", "allowedCuisine[]" = "cuisine^cuisine-asian",
-#                      "allowedCourse[]" = "course^course-Desserts", "allowedDiet[]" = "390^Pescetarian", 
-#                      "allowedAllergy[]"="397^Egg-Free")
-# a
-# query_params
-# is.list(a)
-# # create a table that doesn't include the nutrition information
-# b <- create_table(query_params)
-# c <- create_table(a)
-# e <- create_table(query_params)
-# f <- create_table(a)

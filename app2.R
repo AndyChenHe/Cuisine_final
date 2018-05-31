@@ -4,6 +4,7 @@ library(dplyr)
 source("create_table.R")
 source("andy_part.R")
 
+# Create a list for control bar's choices
 cuisine_list <- c("American", "Italian", "Asian", "Mexican", "Southern & Soul Food", "French", 
                  "Southwestern", "Barbecue", "Indian", "Chinese", "Cajun & Creole", "English", 
                  "Mediterranean", "Greek", "Spanish", "German", "Thai", 
@@ -64,11 +65,6 @@ ui <- fluidPage(
                   # This tab is for
                   tabPanel("Micronutrition"
                            
-                  ),
-                  
-                  # This tab is for
-                  tabPanel("Preparation"
-                           
                   )
       )
 
@@ -89,7 +85,7 @@ server <- function(input, output) {
     reactive_table$table <- create_table(queries_list)
   }
   
-# Andy works here
+  #render the description summary of our table
   output$general_description <- renderText({
     initialize_table_need_to_be_used()
     summary_list <- return_summary(reactive_table$table, input$cuisine1_name, input$cuisine2_name)
@@ -99,10 +95,11 @@ server <- function(input, output) {
     description
   })
   
+  # render the table that including all the information about all cuisines
   output$data <- renderDataTable({
-    table <- reactive_table$table %>% 
+    recipe_details <- reactive_table$table %>% 
       select(recipeName,attributes.cuisine, ingredients, rating, totalTimeInSeconds)
-    table
+    recipe_details
   })
 
   
