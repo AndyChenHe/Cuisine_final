@@ -33,9 +33,9 @@ ui <- fluidPage(
     # Control panels
     sidebarPanel(
       # User can use this drop down menu to select the state they want to see
-      selectInput("cuisine1_name", label="The name of the Cuisine 1", 
+      selectInput("cuisine1_name", label="Cuisine 1", 
                   choices= unique(cuisine_list)),
-      selectInput("cuisine2_name", label="The name of the Cuisine 2", 
+      selectInput("cuisine2_name", label="Cuisine 2", 
                   choices= unique(cuisine_list2)),
       selectInput("allowed_course", label="Allowed course", 
                   choices= unique(course_list)),
@@ -57,12 +57,6 @@ ui <- fluidPage(
                     textOutput("general_description"),
                     dataTableOutput("data")
                   ),
-                  
-                  # This tab is for
-                  tabPanel("Flavor Profile",
-                    dataTableOutput("data2")        
-                  ),
-                  
                   # This tab is for
                   tabPanel("Macronutrition",
                     plotOutput("macro_pie1"),
