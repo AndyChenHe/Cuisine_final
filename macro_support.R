@@ -1,15 +1,5 @@
 library(dplyr)
 
-source("./generate_data.R")
-
-# input <- c("American",    # cuisine 1
-#            "Asian",       # cuisine 2
-#            "",            # course
-#            "",            # diet
-#            "")            # allergy
-
-
-
 # Analyzes data generated from input filters
 analyze <- function(input) {
   names <- c("id", "rating", "course", "cuisine", "carb", "fat", "protein")

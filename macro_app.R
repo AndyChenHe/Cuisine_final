@@ -56,6 +56,7 @@ ui <- fluidPage(
                     plotOutput("macro_pie1"),
                     plotOutput("macro_pie2"),
                     dataTableOutput("macro_table"),
+                    h2("Diet Advisory"),
                     textOutput("macro_summary")
                   ),
                   
@@ -176,7 +177,7 @@ server <- function(input, output) {
   })
   
   output$macro_summary <- renderText({
-    text <- paste0(
+    text <- paste0(h2(
       input$cuisine1_name, " cuisine is high in ", macro_nut1(), "s. ",
       "Diets high in ", macro_nut1(), "s may lead to ", macro_comments1(), ". "
     )
