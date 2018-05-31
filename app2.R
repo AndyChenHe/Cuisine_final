@@ -49,7 +49,7 @@ ui <- fluidPage(
     # This panel will be used to show the graph and table
     mainPanel(
       tabsetPanel(type = "tabs",
-                  # This tab is for
+                  # This tab is for genreal information
                   tabPanel("General",
                     h1(
                       "General information of your choice"
@@ -57,7 +57,7 @@ ui <- fluidPage(
                     textOutput("general_description"),
                     dataTableOutput("data")
                   ),
-                  # This tab is for
+                  # This tab is for table and analysis for Macronutrition
                   tabPanel("Macronutrition",
                     plotOutput("macro_pie1"),
                     plotOutput("macro_pie2"),
@@ -66,7 +66,7 @@ ui <- fluidPage(
                     textOutput("macro_summary")
                   ),
                   
-                  # This tab is for
+                  # This tab is for table and analysis for Micronutrition 
                   tabPanel("Micronutrition",
                    dataTableOutput("micro_table"),
                    dataTableOutput("micro_table_sum"),
