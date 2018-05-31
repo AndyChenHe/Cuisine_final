@@ -20,13 +20,13 @@ return_summary <- function(basic_table, cuisine1, cuisine2) {
   basic_table$is_cuisine1 <- "1"
   basic_table$is_cuisine2 <- "2"
   index = 1
-  for (cuisine_type in basic_table[,10]) {
+  for (cuisine_type in basic_table[,"attributes.cuisine"]) {
     existence <- any(cuisine_type == cuisine1)
      basic_table[index, "is_cuisine1"] <- existence
      index <- index + 1
   }
   index = 1
-  for (cuisine_type in basic_table[,10]) {
+  for (cuisine_type in basic_table[,"attributes.cuisine"]) {
     existence <- any(cuisine_type == cuisine2)
     basic_table[index, "is_cuisine2"] <- existence
     index <- index + 1
