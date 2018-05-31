@@ -75,7 +75,7 @@ return_description <- function(summary_list, cuisine1_name, cuisine2_name) {
       description <- paste0(
         "Accoridng to your current selection, we only find lots of recipes for ", cuisine1_name,  "! ",
         "The average rating for ", cuisine1_name, " is ", average_rating_for_cuisine1,
-        " and the average cooking time for ", cuisine1_name, " is ", average_rating_for_cuisine1,
+        " and the average cooking time for ", cuisine1_name, " is ", average_cooking_time_for_cuisine1,
         " mins. The following table shows all results that match you choices.
         If you want to learn details information about this cuisine,
         you can navigate to other tabs in this page."
@@ -84,7 +84,7 @@ return_description <- function(summary_list, cuisine1_name, cuisine2_name) {
       description <- paste0(
         "Accoridng to your current selection, we only find lots of recipes for ", cuisine2_name,  "! ",
         "The average rating for ", cuisine2_name, " is ", average_rating_for_cuisine2,
-        " and the average cooking time for ", cuisine2_name, " is ", average_rating_for_cuisine2,
+        " and the average cooking time for ", cuisine2_name, " is ", average_cooking_time_for_cuisine2,
         " mins. The following table shows all results that match you choices.
         If you want to learn details information about this cuisine,
         you can navigate to other tabs in this page."
