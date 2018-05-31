@@ -2,24 +2,22 @@ library(dplyr)
 
 source("./generate_data.R")
 
-input <- c("American",    # cuisine 1
-           "Asian",       # cuisine 2
-           "",            # course
-           "",            # diet
-           "")            # allergy
+# input <- c("American",    # cuisine 1
+#            "Asian",       # cuisine 2
+#            "",            # course
+#            "",            # diet
+#            "")            # allergy
+
+
 
 # Analyzes data generated from input filters
-analyze <- function(input, c1) {
+analyze <- function(input, c1, type) {
   names <- c("id", "rating", "course", "cuisine", "carb", "fat", "protein")
-  data <- create_table(generate_param(input)) %>%
+  data <- input %>%
     select(id, rating, attributes.course, attributes.cuisine,
            contains("Carbohydrate"), contains("lipid"), contains("Protein"))
   colnames(data) <- names
-  data %>%
-    mutate(is1 = lapply(cuisine, element, input[[c1]])) %>%
-    filter(is1 == (c1 == 1)) %>%
-    summarize(cuisine = input[[c1]], carb = mean(carb), fat = mean(fat), 
-                  protein = mean(protein))
+  data
 }
 
 # Puts analyzed data in visualization-compatible format
