@@ -11,7 +11,7 @@ source("./generate_data.R")
 
 
 # Analyzes data generated from input filters
-analyze <- function(input, c1, type) {
+analyze <- function(input) {
   names <- c("id", "rating", "course", "cuisine", "carb", "fat", "protein")
   data <- input %>%
     select(id, rating, attributes.course, attributes.cuisine,

@@ -55,7 +55,8 @@ ui <- fluidPage(
                   tabPanel("Macronutrition",
                     plotOutput("macro_pie1"),
                     plotOutput("macro_pie2"),
-                    dataTableOutput("macro_table")
+                    dataTableOutput("macro_table"),
+                    textOutput("macro_summary")
                   ),
                   
                   # This tab is for
@@ -106,32 +107,88 @@ server <- function(input, output) {
   # Macro (Brendan)
   
   source("./analyze_macro.R")
-  table1 <- reactive({
+  macro_table1 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
       filter(is1 == TRUE) %>%
-      summarize(cuisine = input$cuisine1_name, carb = mean(carb),
-                fat = mean(fat), protein = mean(protein))
+      summarize(cuisine = input$cuisine1_name, carb = mean(carb, na.rm = TRUE),
+                fat = mean(fat, na.rm = TRUE), protein = mean(protein, na.rm = TRUE))
   })
-  
+
   output$macro_pie1 <- renderPlot({
-    test(visualize(table1()))
+    test(visualize(macro_table1()))
   })
   
-  table2 <- reactive({
+  macro_table2 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
-      filter(is1 == TRUE) %>%
-      summarize(cuisine = input$cuisine1_name, carb = mean(carb),
-                fat = mean(fat), protein = mean(protein))
-    })
+      filter(is1 == FALSE) %>%
+      summarize(cuisine = input$cuisine2_name, carb = mean(carb, na.rm = TRUE),
+                fat = mean(fat, na.rm = TRUE), protein = mean(protein, na.rm = TRUE))
+  })
   
   output$macro_pie2 <- renderPlot({
-    test(visualize(table2()))
+    test(visualize(macro_table2()))
   })
   
   output$macro_table <- renderDataTable({
-    bind_rows(table1(), table2())
+    bind_rows(macro_table1(), macro_table2())
+  })
+  
+  macro_nut1 <- reactive({
+    macro_table1() %>%
+      visualize() %>%
+      filter(value == max(value)) %>%
+      select(key)
+  })
+  
+  macro_nut2 <- reactive({
+    value <- macro_table2() %>%
+      visualize() %>%
+      filter(value == max(value)) %>%
+      select(key)
+  })
+  
+  macro_comments1 <- reactive({
+    comments <- list(fat = "weight gain or constipation", 
+                     carb = "diabetes or obesity",
+                     protein = "high cholesterol or kidney problems")
+    if(macro_nut1() == "fat") {
+      return(comments$fat)
+    } else if(macro_nut1 == "carb") {
+      return(comments$carb)
+    } else {
+      return(comments$protein)
+    }
+  })
+  
+  macro_comments2 <- reactive({
+    comments <- list(fat = "weight gain or constipation", 
+                     carb = "diabetes or obesity",
+                     protein = "high cholesterol or kidney problems")
+    if(macro_nut2() == "fat") {
+      return(comments$fat)
+    } else if(macro_nut2() == "carb") {
+      return(comments$carb)
+    } else {
+      return(comments$protein)
+    }
+  })
+  
+  output$macro_summary <- renderText({
+    text <- paste0(
+      input$cuisine1_name, " cuisine is high in ", macro_nut1(), "s. ",
+      "Diets high in ", macro_nut1(), "s may lead to ", macro_comments1(), ". "
+    )
+    if(macro_nut2() == macro_nut1()) {
+      text <- paste0(text, "The same if true of ",
+                     input$cuisine2_name, " cuisine." )
+    } else {
+      text <- paste0(
+        text, input$cuisine2_name, " cuisine is high in ", macro_nut2(), "s. ",
+        "Diets high in ", macro_nut2(), "s may lead to ", macro_comments2(), ". "
+      )
+    }
   })
 }
 
