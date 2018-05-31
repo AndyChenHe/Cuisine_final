@@ -3,45 +3,22 @@ library(jsonlite)
 library(dplyr)
 library(tidyr)
 source("create_table.R")
-# This function will return a summary table that including general information about
-# # recipes users select
-  # queries <- c("Asian", "American", "Main Dishes")
-  # a <- generate_param(queries)
-  # b <- create_table(a)
-  # basic_table <- b
-  # c <- return_summary(basic_table, "Asian", "American")
-  # c
-  # cuisine1 <- "Asian"
-  # cuisine2 <- "American"
-  # return_description(c,cuisine1,cuisine2)
 return_summary <- function(basic_table, cuisine1, cuisine2) {
-  # Becasue some cuisine attributes returned the vector list, 
-  # so the first step is checking the cuisine type of the recipe. 
-  basic_table$is_cuisine1 <- "1"
-  basic_table$is_cuisine2 <- "2"
-  index = 1
-  for (cuisine_type in basic_table[,"attributes.cuisine"]) {
-    existence <- any(cuisine_type == cuisine1)
-     basic_table[index, "is_cuisine1"] <- existence
-     index <- index + 1
-  }
-  index = 1
-  for (cuisine_type in basic_table[,"attributes.cuisine"]) {
-    existence <- any(cuisine_type == cuisine2)
-    basic_table[index, "is_cuisine2"] <- existence
-    index <- index + 1
-  }
   
+  cuisine1_table <- mutate(basic_table, is1 = lapply(attributes.cuisine, element, cuisine1)) %>%
+    filter(is1 == TRUE)
+  cuisine2_table <- mutate(basic_table, is1 = lapply(attributes.cuisine, element, cuisine2)) %>% 
+    filter(is1 == FALSE)
+
   # Based on the results, create a summary table for both cuisines
-  cuisine1_summary <- basic_table %>% 
-    filter(is_cuisine1 == TRUE) %>% 
+  cuisine1_summary <- cuisine1_table %>% 
     summarise(
       number_of_result = n(),
       average_time = round(mean(totalTimeInSeconds, na.rm=TRUE) * 10 / 60) / 10,
       average_rating = round(mean(rating, na.rm=TRUE) * 10) / 10
     )
+  
   cuisine2_summary <- basic_table %>% 
-    filter(is_cuisine2 == TRUE) %>% 
     summarise(
       number_of_result = n(),
       average_time = round(mean(totalTimeInSeconds, na.rm=TRUE) * 10 / 60) / 10,
@@ -73,21 +50,21 @@ return_description <- function(summary_list, cuisine1_name, cuisine2_name) {
   if (number_of_results_for_cuisine1 == 0 || number_of_results_for_cuisine2 == 0) { # if any of cuisines doesn't exisit
     if (number_of_results_for_cuisine1 != 0) {
       description <- paste0(
-        "Accoridng to your current selection, we only find lots of recipes for ", cuisine1_name,  "! ",
+        "According to your current selection, we have found lots of recipes for ", cuisine1_name,  "! ",
         "The average rating for ", cuisine1_name, " is ", average_rating_for_cuisine1,
         " and the average cooking time for ", cuisine1_name, " is ", average_cooking_time_for_cuisine1,
-        " mins. The following table shows all results that match you choices.
-        If you want to learn details information about this cuisine,
-        you can navigate to other tabs in this page."
+        " mins. The following table shows all the results that match your choices.
+        If you want to learn detailed information about this cuisine,
+        you can navigate to other tabs on this page."
       )
     } else {
       description <- paste0(
-        "Accoridng to your current selection, we only find lots of recipes for ", cuisine2_name,  "! ",
+        "According to your current selection, we have found lots of recipes for ", cuisine2_name,  "! ",
         "The average rating for ", cuisine2_name, " is ", average_rating_for_cuisine2,
         " and the average cooking time for ", cuisine2_name, " is ", average_cooking_time_for_cuisine2,
-        " mins. The following table shows all results that match you choices.
-        If you want to learn details information about this cuisine,
-        you can navigate to other tabs in this page."
+        " mins. The following table shows all the results that match your choices.
+        If you want to learn detailed information about this cuisine,
+        you can navigate to other tabs on this page."
       )
     }
   } else { #Which means both cuisines are exisiting
@@ -105,25 +82,28 @@ return_description <- function(summary_list, cuisine1_name, cuisine2_name) {
       
       #Create the description
       description <- paste0(
-        "Accoridng to your current selection, we find lots of recipes for you!
-      Among those recipes, there are ", number_of_results_for_cuisine1, " recipes belong to ",
-        cuisine1_name, " and ", number_of_results_for_cuisine2, " recipes belong to ", cuisine2_name, ".
+        "According to your current selection, we have found lots of recipes for you!
+      Among those recipes, there are ", number_of_results_for_cuisine1, " recipes that belong to ",
+        cuisine1_name, " and ", number_of_results_for_cuisine2, " recipes that belong to ", cuisine2_name, ".
       The average rating for ", cuisine1_name, " is ", average_rating_for_cuisine1, ", and
       the average rating for ", cuisine2_name, " is ", average_rating_for_cuisine2, ". If your want
-      to do or learn quick cooking, you should consider about ", time_saving_cuisine_name, ". Becasue, 
+      to do or learn how to cook fast cuisines, you should consider ", time_saving_cuisine_name, ". Because, 
       the avergae cooking time for ", cuisine1_name, " is ", average_cooking_time_for_cuisine1, 
         " mins, and the average cooking time for ", cuisine2_name, " is ", average_cooking_time_for_cuisine2,
-        " mins. The following table shows all results that match you choices.
-      If you want to learn details information about those cuisine, 
-      you can navigate to other tabs in this page."
+        " mins. The following table shows all the results that match your choices.
+      If you want to learn more detailed information about those cuisines, 
+      you can navigate to other tabs on this page."
       )  
   }
   description
 }
 
-
-
-
+# This function will check whether it is a cuisine 1 or two depends on the params
+element <- function(check, # List of cuisine types
+                    phrase # Cuisine name 
+                    ){ 
+  is.element(phrase, check)
+}
 
 
 

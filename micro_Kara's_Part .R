@@ -21,27 +21,7 @@ micro_table_2 <- micro_table %>%
     `Magnesium, Mg ( in gram )`, `Potassium, K ( in gram )`, `Sodium, Na ( in gram )`, 
     `Sugars, total ( in gram )`) 
 
-#add columns to basic table 
-micro_table_2$cuisine1 <- "1"
-micro_table_2$cuisine2 <- "2" 
-
-#allows lists in data table to work in function 
-index = 1 
-for(cuisine_type in micro_table_2[,"attributes.cuisine"]) {
-  b <- any(cuisine_type == cuisine1)
-  micro_table_2[index, "cuisine1"] <- b 
-  index <- index +1 
-}
-index = 1 
-for(cuisine_type in micro_table_2[,"attributes.cuisine"]) {
-  b <- any(cuisine_type == cuisine2)
-  print(cuisine_type)
-  micro_table_2[index, "cuisine2"] <- b 
-  index <- index +1 
-}
-
 micro_table_2
-
 }
 
 #creates a summary table with average values of each micro nutrient

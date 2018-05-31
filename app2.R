@@ -158,6 +158,8 @@ server <- function(input, output) {
   })
 
 # Macro (Brendan)
+  
+  # Table of means of cuisine 1 values
   macro_table1 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
@@ -166,10 +168,12 @@ server <- function(input, output) {
                 fat = mean(fat, na.rm = TRUE), protein = mean(protein, na.rm = TRUE))
   })
   
+  # Pie chart of cuisine 1 values
   output$macro_pie1 <- renderPlot({
     test(visualize(macro_table1()))
   })
   
+  # Table of means of cuisine 1 values
   macro_table2 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
@@ -178,14 +182,17 @@ server <- function(input, output) {
                 fat = mean(fat, na.rm = TRUE), protein = mean(protein, na.rm = TRUE))
   })
   
+  # Pie chart of means of cuisine 2 values
   output$macro_pie2 <- renderPlot({
     test(visualize(macro_table2()))
   })
   
+  # Table of mean cuisine values
   output$macro_table <- renderDataTable({
     bind_rows(macro_table1(), macro_table2())
   })
   
+  # Cuisine 1's prevalent nutrient
   macro_nut1 <- reactive({
     macro_table1() %>%
       visualize() %>%
@@ -193,6 +200,7 @@ server <- function(input, output) {
       select(key)
   })
   
+  # Cuisine 2's prevalent nutrient
   macro_nut2 <- reactive({
     value <- macro_table2() %>%
       visualize() %>%
@@ -200,6 +208,7 @@ server <- function(input, output) {
       select(key)
   })
   
+  # Generate comment on cuisine 1's prevalent nutrient
   macro_comments1 <- reactive({
     comments <- list(fat = "weight gain or constipation", 
                      carb = "diabetes or obesity",
@@ -213,6 +222,7 @@ server <- function(input, output) {
     }
   })
   
+  # Generate comment on cuisine 2's prevalent nutrient
   macro_comments2 <- reactive({
     comments <- list(fat = "weight gain or constipation", 
                      carb = "diabetes or obesity",
@@ -226,6 +236,7 @@ server <- function(input, output) {
     }
   })
   
+  # Paragraph of information on prevalent nutrients in either cuisine
   output$macro_summary <- renderText({
     text <- paste0(
       input$cuisine1_name, " cuisine is high in ", macro_nut1(), "s. ",
