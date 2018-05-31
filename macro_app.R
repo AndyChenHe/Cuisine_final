@@ -107,7 +107,8 @@ server <- function(input, output) {
   
   # Macro (Brendan)
   
-  source("./analyze_macro.R")
+  source("./macro_support.R")
+  
   macro_table1 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
@@ -177,7 +178,7 @@ server <- function(input, output) {
   })
   
   output$macro_summary <- renderText({
-    text <- paste0(h2(
+    text <- paste0(
       input$cuisine1_name, " cuisine is high in ", macro_nut1(), "s. ",
       "Diets high in ", macro_nut1(), "s may lead to ", macro_comments1(), ". "
     )
