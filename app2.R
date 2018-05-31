@@ -3,6 +3,8 @@ library(ggplot2)
 library(dplyr)
 source("create_table.R")
 source("andy_part.R")
+source("micro_Kara's_Part .R")
+source("./macro_support.R")
 
 # Create a list for control bar's choices
 cuisine_list <- c("American", "Italian", "Asian", "Mexican", "Southern & Soul Food", "French", 
@@ -71,8 +73,35 @@ ui <- fluidPage(
                   ),
                   
                   # This tab is for
-                  tabPanel("Micronutrition"
-                           
+                  tabPanel("Micronutrition",
+                   dataTableOutput("micro_table"),
+                   dataTableOutput("micro_table_sum"),
+                   plotOutput("micro_plot"),
+                   tags$p("Micronutrient contents include Calcium, Folate, 
+                          Magnesium, Potassium, Sodium and Sugars. It's interesting to see
+                          the comparsion of these nutrients in different types of cuisines. 
+                          For example, American cuisines tend to have more suagr in their meals
+                          compared to other countries. One comparison shows that an American cuisine
+                          had 55 grams of sugar compared to other French cuisines that had around
+                          10 to 13 grams of sugar in their meals. It should be noted too that Americans,
+                          on average tend to be more overweight then people in other countries. There
+                          is a direct correlation between the amount of sugar in American cuisine 
+                          and obesity rates compared to sugar content in other countries. Secondly, 
+                          American cuisines tend to have more sodium compared other cuisines. We can 
+                          make the same observation with sodium content as we did with sugars and its
+                          relation to the obesity epidemic in the United States. Of course, we must 
+                          also assume that most people in American eat mostly American food. When looking
+                          into what the most popular dishes were in America, the list consisted of Apple
+                          pie, Meatloaf, Buffalo Wings, etc. which tells us that American's are eating
+                          mostly American foods. Because of this fact, it is safe to make the assumption
+                          that because American's eat mostly American food, they are consuming more sugar
+                          and sodium which in turn contributes to US obesity rates."), 
+                   tags$p("You will also see that all meals have more sugar then any other micro nutrient
+                          across the board. Clearly, all cuisines contain more sugar for the purpose of 
+                          making the meal taste good. But, American cuisine contains the most sugar of any 
+                          other types of cuisines. This means, if the user is looking for a healthy meal 
+                          option, they should stir away from American cuisines and go for a French or Asian
+                          cuisine instead.")                           
                   )
       )
 
@@ -111,12 +140,24 @@ server <- function(input, output) {
   })
 
   
-# Kara workds here r  
+# Kara workds here r
+  #renders table with all microbutrient contents of each cuisine 
+  output$micro_table <- renderDataTable({
+    reactive_table$micro_nutrition_table <- process_basic_table(reactive_table$table, input$cuisine1_name, input$cuisine2_name)
+    reactive_table$micro_nutrition_table  
+  })
+  #renders summary table with average micro nutrient contents of each cuisine 
+  output$micro_table_sum <- renderDataTable({
+    reactive_table$micro_nutrition_sum_table <- summ_table(reactive_table$micro_nutrition_table) 
+    reactive_table$micro_nutrition_sum_table
+  })
+  #renders bar chart for summary micronutrient contents 
+  output$micro_plot <- renderPlot({
+    bar_for_micro <- micro_vis(reactive_table$micro_nutrition_sum_table)
+    bar_for_micro
+  })
 
 # Macro (Brendan)
-  
-  source("./macro_support.R")
-  
   macro_table1 <- reactive({
     analyze(reactive_table$table) %>%
       mutate(is1 = lapply(cuisine, element, input$cuisine1_name)) %>%
